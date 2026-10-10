@@ -1,0 +1,54 @@
+name: DCode source analysis
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  analyze:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '25'
+      - name: Generate reports and dependency graph
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl --fail --silent --show-error --location https://www.designite-tools.com/assets/DesigniteJava.jar --output "$RUNNER_TEMP/DesigniteJava.jar"
+          java -jar "$RUNNER_TEMP/DesigniteJava.jar" -i src/main/java -o designite-output -g -d
+          test -s designite-output/DependencyGraph.graphml
+      - name: Keep analysis reports
+        uses: actions/upload-artifact@v4
+        with:
+          name: designite-reports-${{ github.sha }}
+          path: designite-output/
+          if-no-files-found: error
+      - name: Upload reports to DCodeHub project
+        env:
+          DCODE_API_KEY: ${{ secrets.DCODE_API_KEY }}
+          DCODE_PROJECT_ID: ${{ vars.DCODE_PROJECT_ID }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          : "${DCODE_API_KEY:?Set repository secret DCODE_API_KEY}"
+          : "${DCODE_PROJECT_ID:?Set repository variable DCODE_PROJECT_ID}"
+          forms=()
+          index=1
+          for file in designite-output/*.csv designite-output/*.graphml; do
+            test -f "$file"
+            forms+=(--form "file${index}=@${file}")
+            index=$((index + 1))
+          done
+          curl --fail --silent --show-error \
+            --header "X-API-Key: $DCODE_API_KEY" \
+            --header "X-Commit-ID: $GITHUB_SHA" \
+            --header "X-Tool: designiteJava" \
+            "${forms[@]}" \
+            "https://dcodehub.com/api/projects/${DCODE_PROJECT_ID}/upload/" \
+            --output "$RUNNER_TEMP/dcode-upload-response.json"
+          echo "Reports uploaded. Open the project in DCodeHub to inspect results."
