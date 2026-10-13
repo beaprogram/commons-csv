@@ -549,4 +549,13 @@ final class Lexer implements Closeable {
             buffer.setLength(length);
         }
     }
+    /**
+     * Writes a diagnostic record using the CSV output API.
+     *
+     * @param printer The diagnostic destination.
+     * @throws IOException If writing fails.
+     */
+    void writeDiagnostic(final CSVPrinter printer) throws IOException {
+        printer.printRecord("lexer-line", getCurrentLineNumber());
+    }
 }
