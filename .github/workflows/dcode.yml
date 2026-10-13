@@ -57,3 +57,12 @@ jobs:
             "https://dcodehub.com/api/projects/${DCODE_PROJECT_ID}/upload/" \
             --output "$RUNNER_TEMP/dcode-upload-response.json"
           echo "Reports uploaded. Open the project in DCodeHub to inspect results."
+          python3 - <<'PY'
+          import json, os
+          with open(os.path.join(os.environ["RUNNER_TEMP"], "dcode-upload-response.json")) as source:
+              response = json.load(source)
+          print("DCode response fields:", ", ".join(response.keys()))
+          for name, value in response.items():
+              if "compliance" in name.lower() or name == "quality_gate":
+                  print(name + ":", json.dumps(value))
+          PY
