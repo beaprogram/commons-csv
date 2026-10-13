@@ -28,7 +28,7 @@ import java.util.Arrays;
 import org.apache.commons.io.IOUtils;
 
 /**
- * Lexical analyzer.
+ * Lexical analyzer for CSV input.
  */
 final class Lexer implements Closeable {
 
