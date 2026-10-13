@@ -1,14 +1,8 @@
 package arupdemo.adapter;
 
-import arupdemo.core.SampleRecord;
-
-/** Deliberate architecture violation for the controlled DCode test. */
+/** Baseline formatter with no dependency on the test model component. */
 public final class RecordFormatter {
     public String format(String value) {
         return "record: " + value;
-    }
-
-    public String formatRecord(SampleRecord record) {
-        return format(record.value());
     }
 }
