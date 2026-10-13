@@ -596,4 +596,13 @@ public final class CSVPrinter implements Flushable, Closeable {
     public void printRecords(final Stream<?> values) throws IOException {
         printRecords(IOStream.adapt(values));
     }
+    /**
+     * Prints the position of a lexical analyzer for diagnostics.
+     *
+     * @param lexer The lexical analyzer to inspect.
+     * @throws IOException If writing fails.
+     */
+    void printLexerPosition(final Lexer lexer) throws IOException {
+        printRecord("lexer-line", lexer.getCurrentLineNumber());
+    }
 }
