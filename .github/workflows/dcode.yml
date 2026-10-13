@@ -63,6 +63,6 @@ jobs:
               response = json.load(source)
           print("DCode response fields:", ", ".join(response.keys()))
           for name, value in response.items():
-              if "compliance" in name.lower() or name == "quality_gate":
+              if "compliance" in name.lower() or name in ("quality_gate", "architecture_gate"):
                   print(name + ":", json.dumps(value))
           PY
