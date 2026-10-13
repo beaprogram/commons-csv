@@ -2,6 +2,11 @@ name: DCode source analysis
 
 on:
   workflow_dispatch:
+  push:
+    branches: [master]
+    paths:
+      - 'src/main/java/**'
+      - '.github/workflows/dcode.yml'
 
 permissions:
   contents: read
