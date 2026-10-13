@@ -65,4 +65,9 @@ jobs:
           for name, value in response.items():
               if "compliance" in name.lower() or name in ("quality_gate", "architecture_gate"):
                   print(name + ":", json.dumps(value))
+          gate = response.get("architecture_gate", {})
+          if gate.get("is_active"):
+              result = gate.get("result")
+              if result != "PASSED":
+                  raise SystemExit("Architecture gate did not pass: " + str(result))
           PY
